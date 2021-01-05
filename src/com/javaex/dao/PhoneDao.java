@@ -53,6 +53,41 @@ public class PhoneDao {
 			e.printStackTrace();
 		}
 	}// close()
+		
+	// 사람정보 가져오기
+	public PersonVo getPerson(int personId) {
+		getDriver();
+		PersonVo personVo = null;
+		try {
+			String query = "";
+			query += " select person_id, ";
+			query += "        name, ";
+			query += "        hp, ";
+			query += "        company ";
+			query += " from person ";
+			query += " where person_id = ? ";
+
+			pstmt = conn.prepareStatement(query);
+			pstmt.setInt(1, personId);
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				int id = rs.getInt("person_id");
+				String name = rs.getString("name");
+				String hp = rs.getString("hp");
+				String company = rs.getString("company");
+
+				personVo= new PersonVo(id, name, hp, company);
+
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		close();
+		return personVo;
+	}//getPerson()
 
 	public int phoneInsert(PersonVo pv) {
 		int count = 0;
@@ -113,7 +148,7 @@ public class PhoneDao {
 
 	}// phoneUpdate
 
-	public int phoneDelete(PersonVo pv) {
+	public int phoneDelete(int id) {
 		getDriver();
 		int count = 0;
 		try {
@@ -122,7 +157,7 @@ public class PhoneDao {
 			query += " WHERE person_id = ? ";
 			pstmt = conn.prepareStatement(query);
 
-			pstmt.setInt(1, pv.getPersonId());
+			pstmt.setInt(1, id);
 			count = pstmt.executeUpdate();
 
 			// 실행
@@ -137,7 +172,7 @@ public class PhoneDao {
 		return count;
 	}// phoneDelete
 
-	public List<PersonVo>  getPersonList() {
+	public List<PersonVo> getPersonList() {
 		getDriver();
 		List<PersonVo> pList = new ArrayList<PersonVo>();
 		try {
@@ -160,13 +195,11 @@ public class PhoneDao {
 				PersonVo pv = new PersonVo(personId, name, hp, company);
 				pList.add(pv);
 			} // while
-/*
-			for (int i = 0; i < pList.size(); i++) {
-				PersonVo pv = pList.get(i);
-				System.out.println(
-						pv.getPersonId() + ".    " + pv.getName() + "    " + pv.getHp() + "    " + pv.getCompany());
-			}
-			*/
+			/*
+			 * for (int i = 0; i < pList.size(); i++) { PersonVo pv = pList.get(i);
+			 * System.out.println( pv.getPersonId() + ".    " + pv.getName() + "    " +
+			 * pv.getHp() + "    " + pv.getCompany()); }
+			 */
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
